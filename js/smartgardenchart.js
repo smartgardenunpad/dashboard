@@ -143,7 +143,7 @@ $(document).ready(function() {
                 }
             })
             .fail(function() {
-                alert('getJSON request failed! ');
+                alert('Data gagal diambil, silahkan muat kembali halaman web.');
             });
     }
     // create the chart when all data is loaded
@@ -270,21 +270,21 @@ $(document).ready(function() {
                 //return this.series.name + ':<b>' + this.y + '</b>' + n + '<br/>' + d.toDateString() + '<br/>' + d.toTimeString().replace(/\(.*\)/, "");
                 //}
             },
-            title: {
-                text: 'PKM Smart Garden v0.1',
-                style: {
-                  "fontSize":"26px",
-                  "fontFamily":"Roboto"
-                }
-
-            },
-            subtitle: {
-                text: 'Stream data sensor intensitas cahaya, humiditas & temperatur pada tanaman tomat cherry di BBPP',
-                style: {
-                  "fontSize":"14px",
-                  "fontFamily":"Roboto"
-                }
-            },
+            // title: {
+            //     text: 'PKM Smart Garden v0.1',
+            //     style: {
+            //       "fontSize":"26px",
+            //       "fontFamily":"Roboto"
+            //     }
+            //
+            // },
+            // subtitle: {
+            //     text: 'Stream data sensor intensitas cahaya, humiditas & temperatur pada tanaman tomat cherry di BBPP',
+            //     style: {
+            //       "fontSize":"14px",
+            //       "fontFamily":"Roboto"
+            //     }
+            // },
             xAxis: {
                 type: 'datetime',
                 ordinal: false,
