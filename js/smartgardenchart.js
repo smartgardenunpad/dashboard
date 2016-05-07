@@ -72,6 +72,8 @@ function ShowAll() {
 //  This is where the chart is generated.
 $(document).ready(function() {
 
+
+
     $('select').material_select();
     //Add Channel Load Menu
     var menu = document.getElementById("Channel Select");
@@ -235,7 +237,8 @@ $(document).ready(function() {
                     text: 'All'
                 }],
                 inputEnabled: true,
-                selected: 2 //Change to 3rd button as default
+                selected: 2, //Change to 3rd button as default
+                inputDateFormat: '%Y-%m-%d'
             },
             plotOptions: {
                 line: {
@@ -335,6 +338,7 @@ $(document).ready(function() {
                 }
             },
             series: []
+
                 //series: [{data:[[getChartDate("2013-06-16T00:32:40Z"),75]]}]
         };
 
@@ -391,7 +395,7 @@ function loadOneChannel() {
     // load a channel selected in the popUp menu.
     var selectedChannel = document.getElementById("Channel Select");
     var maxLoads = document.getElementById("Loads").value;
-    var channelIndex = selectedChannel.selectedIndex;
+    var channelIndex = 0; //selectedChannel.selectedIndex;
     loadChannelHistory(channelIndex, channelKeys[channelIndex].channelNumber, channelKeys[channelIndex].key, channelKeys[channelIndex].fieldList, 0, maxLoads);
 }
 
@@ -413,6 +417,7 @@ function loadChannelHistory(sentChannelIndex, channelNumber, key, sentFieldList,
     window.console && console.log('earliest date:', end);
     window.console && console.log('sentChannelIndex:', sentChannelIndex);
     window.console && console.log('numLoads:', numLoads);
+
     // get the Channel data with a webservice call
     $.getJSON('https://www.thingspeak.com/channels/' + channelNumber + '/feed.json?callback=?&amp;offset=0&amp;start=2013-01-20T00:00:00;end=' + end + ';key=' + key, function(data) {
         // if no access
