@@ -29,6 +29,9 @@ channelKeys.push({
     }, {
         field: 3,
         axis: 'C'
+    }, {
+        field: 4,
+        axis: '%'
     }]
 });
 
@@ -205,7 +208,7 @@ $(document).ready(function() {
                     }
                 }
             },
-            colors: ['#f9a825', '#00695c', '#c62828', '#f7a35c', '#8085e9',
+            colors: ['#f9a825', '#00695c', '#c62828',  '#8085e9', '#f7a35c',
    '#f15c80', '#e4d354', '#2b908f', '#f45b5b', '#91e8e1'],
             rangeSelector: {
                 buttons: [{
@@ -306,7 +309,9 @@ $(document).ready(function() {
                 },
                 opposite: false,
                 id: 'Lux'
-            }, {
+            }, {labels: {
+                format: '{value}%'
+            },
                 title: {
                     text: 'Humiditas (%rh)'
                 },
@@ -319,8 +324,17 @@ $(document).ready(function() {
                 title: {
                     text: 'Temperatur (°C)'
                 },
-                opposite: true,
+                opposite: false,
                 id: 'C'
+            }, {
+                labels: {
+                    format: '{value}%'
+                },
+                title: {
+                    text: 'Kelembaban Tanah (%)'
+                },
+                opposite: true,
+                id: '%'
             }],
             exporting: {
                 enabled: true,
