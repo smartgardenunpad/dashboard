@@ -29,6 +29,9 @@ channelKeys.push({
     }, {
         field: 3,
         axis: 'C'
+    }, {
+        field: 4,
+        axis: '%'
     }]
 });
 
@@ -321,6 +324,15 @@ $(document).ready(function() {
                 },
                 opposite: true,
                 id: 'C'
+            }, {
+                labels: {
+                    format: '{value}%'
+                },
+                title: {
+                    text: 'Kelembaban Tanah (%)'
+                },
+                opposite: true,
+                id: '%'
             }],
             exporting: {
                 enabled: true,
