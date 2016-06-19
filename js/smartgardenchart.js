@@ -1,7 +1,153 @@
 
+// ================== //
+// Google Chart gauge & WIDGET //
+// ================== //
+
+// set your channel id here
+var channel_id = 110398;
+// set your channel's read api key here if necessary
+var api_key = 'Y6T3DUWO7N3SL6RC';
+
+// name of the gauge
+var gauge_name1 = 'Lux';
+var gauge_name2 = '%RH';
+var gauge_name3 = '°C';
+
+// global variables
+var chart, charts, data;
+
+// load the google gauge visualization
+google.load('visualization', '1', {
+    packages: ['gauge']
+});
+google.setOnLoadCallback(initChart);
+
+// display the data
+function displayData(point, baris, gauge_name) {
+    data.setValue(0, 0, gauge_name);
+    data.setValue(0, 1, point);
+    if (baris == 0) {
+        chart_lux.draw(data, options_lux);
+    }
+    if (baris == 1) {
+        chart_hum.draw(data, options_hum);
+    }
+    if (baris == 2) {
+        chart_temp.draw(data, options_temp);
+    }
+
+}
+
+// load the data
+function loadData() {
+    // variable for the data point
+    var hum;
+    var temp;
+    var lux;
+    var soil;
+
+    // get the data from thingspeak
+    $.getJSON('https://api.thingspeak.com/channels/' + channel_id + '/feed/last.json?api_key=' + api_key, function(data) {
+
+        // get the data point
+        lux = data.field1;
+        hum = data.field2;
+        temp = data.field3;
+        soil = data.field4;
+
+        // if there is a data point display it
+        if (lux) {
+            displayData(lux, 0, gauge_name1, options_lux);
+            $("#w_lux").text(parseFloat(lux));
+
+        }
+        if (hum) {
+            displayData(hum, 1, gauge_name2, options_hum);
+            $("#w_hum").text(parseFloat(hum));
+        }
+        if (temp) {
+            displayData(temp, 2, gauge_name3, options_temp);
+            $("#w_temp").text(parseFloat(temp));
+        }
+        if (soil) {
+          $("#w_soil").text(parseFloat(soil));
+        }
+
+    });
+}
+
+// initialize the chart
+function initChart() {
+
+    data = new google.visualization.DataTable();
+    data.addColumn('string', 'Label');
+    data.addColumn('number', 'Value');
+    data.addRows(1);
+
+    chart_lux = new google.visualization.Gauge(document.getElementById('gauge_div_1'));
+    chart_hum = new google.visualization.Gauge(document.getElementById('gauge_div_2'));
+    chart_temp = new google.visualization.Gauge(document.getElementById('gauge_div_3'));
+
+    options_lux = {
+        max: 1000,
+        width: 400,
+        height: 120,
+        minorTicks: 5
+    };
+    options_hum = {
+        width: 400,
+        height: 120,
+        redFrom: 0,
+        redTo: 30,
+        yellowFrom: 30,
+        yellowTo: 50,
+        greenFrom: 70,
+        greenTo: 90,
+        minorTicks: 5
+    };
+    options_temp = {
+        width: 400,
+        height: 120,
+        redFrom: 40,
+        redTo: 100,
+        yellowFrom: 35,
+        yellowTo: 40,
+        greenFrom: 20,
+        greenTo: 35,
+        minorTicks: 5
+    };
+
+    loadData();
+
+    // load new data every 15 seconds
+    setInterval('loadData()', 15000);
+}
+
 // ============= //
 // Highcharts.js //
 // ============= //
+
+// Modifier posisi range selector biar ga nabrak input date waktu di resize jadi kecil
+// Mesti pertama!
+var orgHighchartsRangeSelectorPrototypeRender = Highcharts.RangeSelector.prototype.render;
+Highcharts.RangeSelector.prototype.render = function(min, max) {
+    orgHighchartsRangeSelectorPrototypeRender.apply(this, [min, max]);
+    var leftPosition = this.chart.plotLeft,
+        topPosition = this.chart.plotTop + 5,
+        space = 2;
+    this.zoomText.attr({
+        x: leftPosition,
+        y: topPosition + 15
+    });
+    leftPosition += this.zoomText.getBBox().width;
+    for (var i = 0; i < this.buttons.length; i++) {
+        this.buttons[i].attr({
+            x: leftPosition,
+            y: topPosition
+        });
+        leftPosition += this.buttons[i].width + space;
+    }
+};
 
 // Webpage Javascript to chart multiple ThingSpeak channels on two axis with navigator, load historical data, and export cvs data.
 // Public Domain, by turgo.
@@ -29,6 +175,9 @@ channelKeys.push({
     }, {
         field: 3,
         axis: 'C'
+    }, {
+        field: 4,
+        axis: '%'
     }]
 });
 
@@ -72,8 +221,6 @@ function ShowAll() {
 //  This is where the chart is generated.
 $(document).ready(function() {
 
-
-
     $('select').material_select();
     //Add Channel Load Menu
     var menu = document.getElementById("Channel Select");
@@ -109,6 +256,7 @@ $(document).ready(function() {
     function loadThingSpeakChannel(sentChannelIndex, channelNumber, key, sentFieldList) {
         var fieldList = sentFieldList;
         var channelIndex = sentChannelIndex;
+
         // get the Channel data with a webservice call
         $.getJSON('https://www.thingspeak.com/channels/' + channelNumber + '/feed.json?callback=?&amp;offset=0&amp;results=2500;key=' + key, function(data) {
                 // if no access
@@ -140,9 +288,14 @@ $(document).ready(function() {
                 window.console && console.log('channels Loaded:', channelsLoaded);
                 window.console && console.log('channel index:', channelIndex);
                 if (channelsLoaded == channelKeys.length) {
-                  Highcharts.setOptions({lang:{weekdays:["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"]}}); // Hari indonesia
+                    Highcharts.setOptions({
+                        lang: {
+                            weekdays: ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"]
+                        }
+                    }); // Hari indonesia
                     createChart();
                 }
+
             })
             .fail(function() {
                 alert('Data gagal diambil, silahkan muat kembali halaman web.');
@@ -155,15 +308,21 @@ $(document).ready(function() {
             chart: {
                 renderTo: 'chart-container',
                 zoomType: 'x',
+                style: {
+                    fontFamily: 'Roboto',
+                    fontSize: '0.95em'
+                },
                 events: {
                     load: function() {
                         if ('true' === 'true' && (''.length < 1 && ''.length < 1 && ''.length < 1 && ''.length < 1 && ''.length < 1)) {
                             // If the update checkbox is checked, get latest data every 15 seconds and add it to the chart
                             setInterval(function() {
+
                                 if (document.getElementById("Update").checked) {
                                     for (var channelIndex = 0; channelIndex < channelKeys.length; channelIndex++) // iterate through each channel
                                     {
                                         (function(channelIndex) {
+
                                             // get the data with a webservice call
                                             $.getJSON('https://www.thingspeak.com/channels/' + channelKeys[channelIndex].channelNumber + '/feed/last.json?callback=?&amp;offset=0&amp;location=false;key=' +
                                                 channelKeys[channelIndex].key,
@@ -187,12 +346,7 @@ $(document).ready(function() {
                                                                 dynamicChart.series[chartSeriesIndex].addPoint(p, true, shift);
                                                             }
                                                         }
-                                                        //window.console && console.log('channelKeys:',channelKeys);
-                                                        //window.console && console.log('chartSeriesIndex:',chartSeriesIndex);
-                                                        //window.console && console.log('channel index:',channelIndex);
-                                                        //window.console && console.log('field index:',fieldIndex);
-                                                        //window.console && console.log('update series name:',dynamicChart.series[chartSeriesName].name);
-                                                        //window.console && console.log('channel keys name:',channelKeys[channelIndex].fieldList[fieldIndex].name);
+
                                                     }
 
 
@@ -200,13 +354,15 @@ $(document).ready(function() {
                                         })(channelIndex);
                                     }
                                 }
+
                             }, 15000);
                         }
                     }
                 }
             },
-            colors: ['#f9a825', '#00695c', '#c62828', '#f7a35c', '#8085e9',
-   '#f15c80', '#e4d354', '#2b908f', '#f45b5b', '#91e8e1'],
+            colors: ['#fb8c00', '#43A047', '#E53935', '#1E88E5', '#f7a35c',
+                '#f15c80', '#e4d354', '#2b908f', '#f45b5b', '#91e8e1'
+            ],
             rangeSelector: {
                 buttons: [{
                     count: 30,
@@ -261,34 +417,28 @@ $(document).ready(function() {
                 }
             },
             tooltip: {
+              style: {
+            fontSize: '1em'
+        },
                 shared: true,
                 valueDecimals: 1,
-                //xDateFormat:'%Y-%m-%d<br/>%H:%M:%S %p' //bug fix
-
-
-                // reformat the tooltips so that local times are displayed
-                //formatter: function() {
-                //var d = new Date(this.x + (myOffset*60000));
-                //var n = (this.point.name === undefined) ? '' : '<br/>' + this.point.name;
-                //return this.series.name + ':<b>' + this.y + '</b>' + n + '<br/>' + d.toDateString() + '<br/>' + d.toTimeString().replace(/\(.*\)/, "");
-                //}
+                shape: "callout",
+                // xDateFormat:'%Y-%m-%d<br/>%H:%M:%S %p' //bug fix
+//
+//
+// // reformat the tooltips so that local times are displayed
+// formatter: function() {
+// var d = new Date(this.x + (myOffset*60000));
+// var n = (this.point.name === undefined) ? '' : '<br/>' + this.point.name;
+// return this.series.name + ':<b>' + this.y + '</b>' + n + '<br/>' + d.toDateString() + '<br/>' + d.toTimeString().replace(/\(.*\)/, "");
+// }
             },
-            // title: {
-            //     text: 'PKM Smart Garden v0.1',
-            //     style: {
-            //       "fontSize":"26px",
-            //       "fontFamily":"Roboto"
-            //     }
-            //
-            // },
-            // subtitle: {
-            //     text: 'Stream data sensor intensitas cahaya, humiditas & temperatur pada tanaman tomat cherry di BBPP',
-            //     style: {
-            //       "fontSize":"14px",
-            //       "fontFamily":"Roboto"
-            //     }
-            // },
             xAxis: {
+              labels: {
+            style: {
+                fontSize: '0.8em'
+            }
+        },
                 type: 'datetime',
                 ordinal: false,
                 min: Date.UTC(2013, 02, 28),
@@ -307,6 +457,9 @@ $(document).ready(function() {
                 opposite: false,
                 id: 'Lux'
             }, {
+                labels: {
+                    format: '{value}%'
+                },
                 title: {
                     text: 'Humiditas (%rh)'
                 },
@@ -319,8 +472,17 @@ $(document).ready(function() {
                 title: {
                     text: 'Temperatur (°C)'
                 },
-                opposite: true,
+                opposite: false,
                 id: 'C'
+            }, {
+                labels: {
+                    format: '{value}%'
+                },
+                title: {
+                    text: 'Kelembaban Tanah (%)'
+                },
+                opposite: true,
+                id: '%'
             }],
             exporting: {
                 enabled: true,
@@ -329,7 +491,10 @@ $(document).ready(function() {
                 }
             },
             legend: {
-                enabled: true
+                enabled: true,
+                itemStyle: {
+                    fontSize: '1em'
+                }
             },
             navigator: {
                 baseSeries: 0, //select which series to show in history navigator, First series is 0
@@ -339,7 +504,7 @@ $(document).ready(function() {
             },
             series: []
 
-                //series: [{data:[[getChartDate("2013-06-16T00:32:40Z"),75]]}]
+            //series: [{data:[[getChartDate("2013-06-16T00:32:40Z"),75]]}]
         };
 
         // add all Channel data to the chart
@@ -359,10 +524,12 @@ $(document).ready(function() {
         }
         // set chart labels here so that decoding occurs properly
         //chartOptions.title.text = data.channel.name;
-        chartOptions.xAxis.title.text = 'Date';
+        chartOptions.xAxis.title.text = 'Waktu';
 
         // draw the chart
         dynamicChart = new Highcharts.StockChart(chartOptions);
+
+
 
         // update series number to account for the navigator series (The historical series at the bottom) which is the first series.
         for (var channelIndex = 0; channelIndex < channelKeys.length; channelIndex++) // iterate through each channel
@@ -378,17 +545,21 @@ $(document).ready(function() {
             }
         }
         // add all history
-        //dynamicChart.showLoading("Loading History..." );
+        // dynamicChart.showLoading("Memuat data terdahulu..." );
         window.console && console.log('Channels: ', channelKeys.length);
         for (var channelIndex = 0; channelIndex < channelKeys.length; channelIndex++) // iterate through each channel
         {
             window.console && console.log('channelIndex: ', channelIndex);
             (function(channelIndex) {
+
                 //load only 1 set of 8000 points
                 loadChannelHistory(channelIndex, channelKeys[channelIndex].channelNumber, channelKeys[channelIndex].key, channelKeys[channelIndex].fieldList, 0, 1);
             })(channelIndex);
+
         }
+
     }
+
 });
 
 function loadOneChannel() {
@@ -397,6 +568,7 @@ function loadOneChannel() {
     var maxLoads = document.getElementById("Loads").value;
     var channelIndex = 0; //selectedChannel.selectedIndex;
     loadChannelHistory(channelIndex, channelKeys[channelIndex].channelNumber, channelKeys[channelIndex].key, channelKeys[channelIndex].fieldList, 0, maxLoads);
+
 }
 
 // load next 8000 points from a ThingSpeak channel and addPoints to a series
@@ -418,6 +590,7 @@ function loadChannelHistory(sentChannelIndex, channelNumber, key, sentFieldList,
     window.console && console.log('sentChannelIndex:', sentChannelIndex);
     window.console && console.log('numLoads:', numLoads);
 
+    dynamicChart.showLoading("Memuat data...");
     // get the Channel data with a webservice call
     $.getJSON('https://www.thingspeak.com/channels/' + channelNumber + '/feed.json?callback=?&amp;offset=0&amp;start=2013-01-20T00:00:00;end=' + end + ';key=' + key, function(data) {
         // if no access
@@ -450,125 +623,14 @@ function loadChannelHistory(sentChannelIndex, channelNumber, key, sentFieldList,
         }
         channelKeys[channelIndex].fieldList = fieldList;
         dynamicChart.redraw()
+
+
         window.console && console.log('channel index:', channelIndex);
         numLoads++;
         if (numLoads < maxLoads) {
             loadChannelHistory(channelIndex, channelNumber, key, fieldList, numLoads, maxLoads);
         }
+        dynamicChart.hideLoading();
     });
-}
 
-// ================== //
-// Google Chart gauge //
-// ================== //
-
-// set your channel id here
-var channel_id = 110398;
-// set your channel's read api key here if necessary
-var api_key = 'Y6T3DUWO7N3SL6RC';
-
-// name of the gauge
-var gauge_name1 = 'Lux';
-var gauge_name2 = '%RH';
-var gauge_name3 = '°C';
-
-// global variables
-var chart, charts, data;
-
-// load the google gauge visualization
-google.load('visualization', '1', {
-    packages: ['gauge']
-});
-google.setOnLoadCallback(initChart);
-
-// display the data
-function displayData(point,baris,gauge_name) {
-    data.setValue(0, 0, gauge_name);
-    data.setValue(0, 1, point);
-    if (baris==0) {
-      chart_lux.draw(data, options_lux);
-    }
-    if (baris==1) {
-      chart_hum.draw(data, options_hum);
-    }
-    if (baris==2) {
-      chart_temp.draw(data, options_temp);
-    }
-
-}
-
-// load the data
-function loadData() {
-    // variable for the data point
-    var hum;
-    var temp;
-    var lux;
-
-    // get the data from thingspeak
-    $.getJSON('https://api.thingspeak.com/channels/' + channel_id + '/feed/last.json?api_key=' + api_key, function(data) {
-
-        // get the data point
-        lux = data.field1;
-        hum = data.field2;
-        temp = data.field3;
-
-        // if there is a data point display it
-        if (lux) {
-            displayData(lux,0,gauge_name1,options_lux);
-        }
-        if (hum) {
-            displayData(hum,1,gauge_name2,options_hum);
-        }
-        if (temp) {
-            displayData(temp,2,gauge_name3,options_temp);
-        }
-
-    });
-}
-
-// initialize the chart
-function initChart() {
-
-    data = new google.visualization.DataTable();
-    data.addColumn('string', 'Label');
-    data.addColumn('number', 'Value');
-    data.addRows(1);
-
-    chart_lux = new google.visualization.Gauge(document.getElementById('gauge_div_1'));
-    chart_hum = new google.visualization.Gauge(document.getElementById('gauge_div_2'));
-    chart_temp = new google.visualization.Gauge(document.getElementById('gauge_div_3'));
-
-    options_lux = {
-        max: 1000,
-        width: 400,
-        height: 120,
-        minorTicks: 5
-    };
-    options_hum = {
-        width: 400,
-        height: 120,
-        redFrom: 0,
-        redTo: 30,
-        yellowFrom: 30,
-        yellowTo: 50,
-        greenFrom: 70,
-        greenTo:90,
-        minorTicks: 5
-    };
-    options_temp = {
-        width: 400,
-        height: 120,
-        redFrom: 40,
-        redTo: 100,
-        yellowFrom: 35,
-        yellowTo: 40,
-        greenFrom: 20,
-        greenTo:35,
-        minorTicks: 5
-    };
-
-    loadData();
-
-    // load new data every 15 seconds
-    setInterval('loadData()', 15000);
 }
