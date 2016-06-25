@@ -12,6 +12,7 @@ var api_key = 'Y6T3DUWO7N3SL6RC';
 var gauge_name1 = 'Lux';
 var gauge_name2 = '%RH';
 var gauge_name3 = '°C';
+var gauge_name4 = '%';
 
 // global variables
 var chart, charts, data;
@@ -34,6 +35,9 @@ function displayData(point, baris, gauge_name) {
     }
     if (baris == 2) {
         chart_temp.draw(data, options_temp);
+    }
+    if (baris == 3) {
+        chart_soil.draw(data, options_soil);
     }
 
 }
@@ -70,6 +74,7 @@ function loadData() {
             $("#w_temp").text(parseFloat(temp));
         }
         if (soil) {
+          displayData(soil, 3, gauge_name4, options_soil);
           $("#w_soil").text(parseFloat(soil));
         }
 
@@ -87,6 +92,7 @@ function initChart() {
     chart_lux = new google.visualization.Gauge(document.getElementById('gauge_div_1'));
     chart_hum = new google.visualization.Gauge(document.getElementById('gauge_div_2'));
     chart_temp = new google.visualization.Gauge(document.getElementById('gauge_div_3'));
+    chart_soil = new google.visualization.Gauge(document.getElementById('gauge_div_4'));
 
     options_lux = {
         max: 1000,
@@ -114,6 +120,17 @@ function initChart() {
         yellowTo: 40,
         greenFrom: 20,
         greenTo: 35,
+        minorTicks: 5
+    };
+    options_soil = {
+        width: 400,
+        height: 120,
+        redFrom: 0,
+        redTo: 50,
+        yellowFrom: 50,
+        yellowTo: 70,
+        greenFrom: 70,
+        greenTo: 90,
         minorTicks: 5
     };
 
@@ -423,7 +440,13 @@ $(document).ready(function() {
                 shared: true,
                 valueDecimals: 1,
                 shape: "callout",
-                // xDateFormat:'%Y-%m-%d<br/>%H:%M:%S %p' //bug fix
+                positioner: function () {
+                return { x: 0, y: 300 };
+            },
+            shadow: false,
+            borderWidth: 0,
+            backgroundColor: 'rgba(255,255,255,0.8)',
+            xDateFormat:'<span style="font-size:1.2em">%A, %d/%b/%Y</span><br><b>%H:%M:%S</b>' //bug fix
 //
 //
 // // reformat the tooltips so that local times are displayed
@@ -452,7 +475,7 @@ $(document).ready(function() {
             },
             yAxis: [{
                 title: {
-                    text: 'Intensitas Cahaya (lux)'
+                    text: 'Intensitas Cahaya'
                 },
                 opposite: false,
                 id: 'Lux'
@@ -461,7 +484,7 @@ $(document).ready(function() {
                     format: '{value}%'
                 },
                 title: {
-                    text: 'Humiditas (%rh)'
+                    text: 'Humiditas Udara'
                 },
                 opposite: true,
                 id: '%RH'
@@ -470,7 +493,7 @@ $(document).ready(function() {
                     format: '{value}°C'
                 },
                 title: {
-                    text: 'Temperatur (°C)'
+                    text: 'Temperatur'
                 },
                 opposite: false,
                 id: 'C'
@@ -479,7 +502,7 @@ $(document).ready(function() {
                     format: '{value}%'
                 },
                 title: {
-                    text: 'Kelembaban Tanah (%)'
+                    text: 'Humiditas Tanah'
                 },
                 opposite: true,
                 id: '%'
@@ -592,7 +615,7 @@ function loadChannelHistory(sentChannelIndex, channelNumber, key, sentFieldList,
 
     dynamicChart.showLoading("Memuat data...");
     // get the Channel data with a webservice call
-    $.getJSON('https://www.thingspeak.com/channels/' + channelNumber + '/feed.json?callback=?&amp;offset=0&amp;start=2013-01-20T00:00:00;end=' + end + ';key=' + key, function(data) {
+    $.getJSON('https://www.thingspeak.com/channels/' + channelNumber + '/feed.json?callback=?&amp;offset=0&amp;start=2015-01-20T00:00:00;end=' + end + ';key=' + key, function(data) {
         // if no access
         if (data == '-1') {
             $('#chart-container').append('This channel is not public.  To embed charts, the channel must be public or a read key must be specified.');
