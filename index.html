@@ -11,7 +11,23 @@
     <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection" />
     <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection" />
     <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" />
-    <script src="https://use.fontawesome.com/2e25451646.js"></script>
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/assets/favicons/apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144.png">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/assets/favicons/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicons/manifest.json">
+    <link rel="mask-icon" href="/assets/favicons/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#00a300">
+    <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
 </head>
 
 <body>
@@ -36,6 +52,7 @@
                             <img src="assets/images/big green.png" class="responsive-img" style="margin: 20px 50px 5px 50px;">
                         </li>
                         <li class="bold"><a href="http://smartgardenunpad.github.io" class="waves-effect waves-orange"><i class="material-icons left">home</i>Tentang</a></li>
+                        <li><a class="waves-effect">Notifikasi via Twitter</a></li>
                         <li><a class="twitter-timeline" data-lang="id" href="https://twitter.com/notifSGU">Tweets by notifSGU</a> </li>
                     </ul>
 
@@ -57,7 +74,7 @@
                             <div class="card-content center" style="padding-top:0px">
                                 <span id="w_lux" class="white-text widget-value">
                                   <div class="progress orange lighten-5"><div class="indeterminate orange lighten-1"></div></div>
-                                </span>
+                                </span><br>
                                 <span class="white-text widget-unit">Lux</span>
                             </div>
                         </div>
@@ -65,11 +82,11 @@
 
                     <div class="col m3 s6">
                         <div class="card green darken-1">
-                          <span class="white-text" style="margin:8px;font-size:0.9em">Humiditas</span>
+                          <span class="white-text" style="margin:8px;font-size:0.9em">Humiditas Udara</span>
                           <div class="card-content center" style="padding-top:0px">
                                 <span id="w_hum" class="white-text widget-value">
                                   <div class="progress orange lighten-5"><div class="indeterminate orange lighten-1"></div></div>
-                                </span>
+                                </span><br>
                                 <span class="white-text widget-unit">%RH</span>
                             </div>
                         </div>
@@ -81,7 +98,7 @@
                           <div class="card-content center" style="padding-top:0px">
                                 <span id="w_temp" class="white-text widget-value">
                                   <div class="progress orange lighten-5"><div class="indeterminate orange lighten-1"></div></div>
-                                </span>
+                                </span><br>
                                 <span class="white-text widget-unit">°C</span>
                             </div>
                         </div>
@@ -89,11 +106,11 @@
 
                     <div class="col m3 s6">
                         <div class="card blue darken-1">
-                          <span class="white-text" style="margin:8px;font-size:0.9em">Kelembapan Tanah</span>
+                          <span class="white-text" style="margin:8px;font-size:0.9em">Humiditas Tanah</span>
                           <div class="card-content center" style="padding-top:0px">
                                 <span id="w_soil" class="white-text widget-value">
                                   <div class="progress orange lighten-5"><div class="indeterminate orange lighten-1"></div></div>
-                                </span>
+                                </span><br>
                                 <span class="white-text widget-unit">%</span>
                             </div>
                         </div>
@@ -103,7 +120,7 @@
                         <!-- GRAPH -->
                         <div class="card">
                             <div class="card-action">
-                                <span class="card-title activator grey-text text-darken-4">Grafik Kondisi Tanaman<i class="material-icons right">settings</i></span>
+                                <span class="card-title activator grey-text text-darken-4">Grafik Kondisi Tanaman<i class="material-icons right tooltipped" data-position="top" data-delay="50" data-tooltip="Pengaturan Grafik">settings</i></span>
                             </div>
                             <div class="card-content" style="padding-top: 0px;">
                                 <div id="chart-container" style="height: 100%;width:100%;min-width: 310px;">
@@ -169,14 +186,29 @@
                         <div class="card-panel" id="below chart">
                             <div id="container">
                                 <div class="row" id="inner" style="padding:0% 5% 0% 5%">
-                                    <div class="col m4 s12" id="gauge_div_2" style="padding:0% 6% 0% 6%">
+                                    <div class="col l3 m6 s12" style="padding:0% 6% 0% 6%">
+                                      <div id="gauge_div_1">
                                         <div class="progress orange lighten-5"><div class="indeterminate orange lighten-1"></div></div>
+                                      </div>
+                                      <span style="font-size:0.8rem;font-weight:bold">Intensitas Cahaya</span>
                                     </div>
-                                    <div class="col m4 s12" id="gauge_div_1" style="padding:0% 6% 0% 6%">
+                                    <div class="col l3 m6 s12" style="padding:0% 6% 0% 6%">
+                                      <div id="gauge_div_2">
                                         <div class="progress orange lighten-5"><div class="indeterminate orange lighten-1"></div></div>
+                                      </div>
+                                      <span style="font-size:0.8rem;font-weight:bold">Humiditas Udara</span>
                                     </div>
-                                    <div class="col m4 s12" id="gauge_div_3" style="padding:0% 6% 0% 6%">
+                                    <div class="col l3 m6 s12" style="padding:0% 6% 0% 6%">
+                                      <div id="gauge_div_3">
                                         <div class="progress orange lighten-5"><div class="indeterminate orange lighten-1"></div></div>
+                                      </div>
+                                      <span style="font-size:0.8rem;font-weight:bold">Temperatur</span>
+                                    </div>
+                                    <div class="col l3 m6 s12" style="padding:0% 6% 0% 6%">
+                                      <div id="gauge_div_4">
+                                        <div class="progress orange lighten-5"><div class="indeterminate orange lighten-1"></div></div>
+                                      </div>
+                                      <span style="font-size:0.8rem;font-weight:bold">Humiditas Tanah</span>
                                     </div>
                                 </div>
                             </div>
@@ -235,6 +267,7 @@
     <script src="js/jquery.scrollme.min.js"></script>
     <script src="js/jquery.scrollSpeed.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+    <script src="https://use.fontawesome.com/2e25451646.js"></script>
 
     <!-- Highcharts Dependencies -->
     <script src="http://code.highcharts.com/stock/highstock.js"></script>
