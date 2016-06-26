@@ -12,7 +12,7 @@
     // Create a newDate() object
 var newDate = new Date();
 
-$("#date").html(newDate.toDateString());
+$("#date").html(newDate.toLocaleDateString('id',{weekday:'short', year:'numeric', month:'short', day:'numeric'}));
 
 setInterval( function() {
 	// Create a newDate() object and extract the seconds of the current time on the visitor's

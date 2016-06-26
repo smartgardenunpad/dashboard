@@ -58,6 +58,12 @@ function loadData() {
         hum = data.field2;
         temp = data.field3;
         soil = data.field4;
+        waktu_str = data.created_at;
+        waktu = new Date(waktu_str);
+
+        $("#last_update_date").text(waktu.toLocaleDateString('id',{weekday:'long', year:'numeric', month:'long', day:'numeric'}));
+        $("#last_update_time").text(waktu.toTimeString().replace(" GMT+0700 (SE Asia Standard Time)", ""));
+
 
         // if there is a data point display it
         if (lux) {
@@ -95,7 +101,7 @@ function initChart() {
     chart_soil = new google.visualization.Gauge(document.getElementById('gauge_div_4'));
 
     options_lux = {
-        max: 1000,
+        max: 20000,
         width: 400,
         height: 120,
         minorTicks: 5
