@@ -35,5 +35,20 @@ setInterval( function() {
 	$("#hours").html(( hours < 10 ? "0" : "" ) + hours);
     }, 1000);
 
+    /* Preloader */
+
+      setTimeout(function(){
+          jQuery('body').addClass('loaded');
+          jQuery('h1').css('color','#222222');
+      }, 3000);
+
   }); // end of document ready
 })(jQuery); // end of jQuery name space
+
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-79927112-2', 'auto');
+  ga('send', 'pageview');
